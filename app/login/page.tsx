@@ -1,60 +1,45 @@
-import Link from "next/link";
 import Default from "../templates/Default";
 
 export default function Login() {
   return (
-    <section className="max-h-screen">
+    <Default className="flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-md bg-white shadow-md rounded-xl p-8 border">
+        <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
 
-    <Default >
-
-      <div className="mb-6 self-start">
-        <Link 
-          href="/" 
-          className="text-blue-600 hover:underline font-medium"
-        >
-          ← Back to Home
-        </Link>
-      </div>
-
-      <div className="bg-white shadow-lg rounded-lg p-8 w-80 max-w-md">
-        <h2 className="text-black text-2xl font-bold mb-6 text-center">Login</h2>
-
-        <form className="space-y-4">
-          <div>
-            <label htmlFor="username" className="text-black block mb-1 font-medium">
-              Username
-            </label>
-           <input
-              type="text"
-              id="username"
-              name="username"
-              required
-              className="text-black w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500"
+        <form className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="font-medium">Email</label>
+            <input
+              type="email"
+              className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="Enter your email"
             />
           </div>
 
-          <div>
-            <label htmlFor="password" className="text-black block mb-1 font-medium">
-              Password
-            </label>
+          <div className="flex flex-col gap-1">
+            <label className="font-medium">Password</label>
             <input
               type="password"
-              id="password"
-              name="password"
-              required
-              className="text-black w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500"
+              className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="Enter your password"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded-md justify-center hover:bg-blue-700 transition"
+            className="bg-gray-600 text-white p-3 rounded-lg font-semibold hover:bg-gray-700 transition"
           >
             Login
           </button>
+
+          <p className="text-center text-sm mt-2">
+            Don’t have an account?{" "}
+            <a href="/Sign-up" className="text-gray-800 underline font-medium">
+              Sign Up
+            </a>
+          </p>
         </form>
       </div>
-      </Default>
-    </section>
+    </Default>
   );
 }

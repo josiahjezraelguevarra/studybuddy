@@ -11,7 +11,7 @@ export default function Home() {
             <h1 className="text-3xl font-bold">Hello, Guest!</h1>
             <p>
               Welcome to Study Buddy!{' '}
-              <a className="underline" href="/signup">
+              <a className="underline" href="/Sign-up">
                 Create your free account
               </a>{' '}
               and upload your notes to get instant AI-powered study help.

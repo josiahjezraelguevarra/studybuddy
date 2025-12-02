@@ -11,13 +11,13 @@ export default function Header() {
       {/* Right side: Buttons */}
       <div className="flex items-center gap-4">
         <Link href="/Sign-up">
-          <button className="bg-blue-600 px-4 py-2 text-white rounded hover:bg-blue-700 transition">
+          <button className="bg-gray-800 px-2 py-1 text-white border-2 border-gray-500 rounded-lg hover:bg-white-700 transition cursor-pointer">
             Sign Up
           </button>
         </Link>
 
         <Link href="/Login">
-          <button className="bg-green-600 px-4 py-2 text-white rounded hover:bg-green-700 transition">
+          <button className="bg-white px-4 py-1.5 text-gray-800 rounded-lg hover:bg-white-700 transition cursor-pointer">
             Login
           </button>
         </Link>

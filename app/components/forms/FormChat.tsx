@@ -1,126 +1,124 @@
 'use client'
-
+import { Send, Paperclip, UserRound, Bot } from "lucide-react";
 import { useChat } from '@ai-sdk/react'
 import { useState, useRef } from 'react'
-import { UserRound, Bot } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 export default function FormChat() {
-  // AI SDK
   const { messages, sendMessage } = useChat({
-    onError: (error) => {
-      console.log('error: ', error)
-      setError(error.toString())
-    },
-  })
+    onError: (error) => setError(error.toString())
+  });
 
-  // States
-  const [error, setError] = useState('')
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('');
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Ref for auto-scrolling
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  async function handleChat(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!input.trim()) return;
 
-  // Functions
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-
-      // trigger
-      const form = e.currentTarget.form
-      if (form && input.trim()) {
-        form.requestSubmit()
-      }
+    try {
+      setIsLoading(true);
+      await sendMessage({ text: input });
+      setInput('');
+    } catch (err: any) {
+      setError(err.toString());
+    } finally {
+      setIsLoading(false);
     }
   }
 
-  // Handle chat
-  async function handleChat(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-
-    if (!input) return
-
-    try {
-      setIsLoading(true)
-      await sendMessage({ text: input })
-      setInput('')
-    } catch (error: any) {
-      console.log('error: ', error)
-      setError(error.toString())
-    } finally {
-      setIsLoading(false)
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const form = e.currentTarget.form;
+      if (form && input.trim()) form.requestSubmit();
     }
   }
 
   return (
-    <div className="max-w-md w-full mx-auto">
-      {/* Message Display Area */}
-      {messages && messages.length > 0 && (
-        <div className="flex-1 flex flex-col gap-1">
-          {messages.map((message) => (
+    <div className="flex flex-col h-screen overflow-hidden bg-white">
+
+      {/* CHAT MESSAGES (Scrolls internally) */}
+      <div className="flex-1 overflow-y-auto px-4 pt-4">
+        <div className="max-w-2xl mx-auto">
+          {messages?.map((message) => (
             <div
-              data-loading={isLoading}
               key={message.id}
-              className="flex gap-3  p-2"
+              className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              {message.role === 'user' ? (
-                <div className="h-10 w-10 aspect-square rounded-full border flex items-center justify-center bg-gray-300">
-                  <UserRound />
+              <div className={`flex items-start m-2 gap-3 max-w-[75%] ${message.role === "user" ? "flex-row-reverse" : ""}`}>
+                <div className="h-10 w-10 rounded-full border flex items-center justify-center bg-gray-300">
+                  {message.role === "user" ? <UserRound /> : <Bot />}
                 </div>
-              ) : (
-                <div className="h-10 w-10 aspect-square rounded-full border flex items-center justify-center bg-gray-300">
-                  <Bot />
-                </div>
-              )}
-              {message.parts.map((part, i) => {
-                switch (part.type) {
-                  case 'text':
-                    return (
+
+                <div className="flex flex-col">
+                  {message.parts.map((part, i) =>
+                    part.type === "text" ? (
                       <div
-                        key={`${message.id}-${i}`}
-                        className="bg-gray-200 flex flex-col items-center p-3 rounded-md"
+                        key={i}
+                        className={`p-3 rounded-xl ${
+                          message.role === "user"
+                            ? "bg-gray-800 text-white"
+                            : "bg-gray-200 text-black"
+                        }`}
                       >
-                        <div className="[&>p]:mb-3 [&>p]:last:mb-0 [&>ul]:mb-4 [&>ul>li]:list-disc [&>ul>li]:ml-5 [&>ol>li]:list-decimal [&>ol>li]:ml-5">
-                          <ReactMarkdown>{part.text}</ReactMarkdown>
-                        </div>
+                        <ReactMarkdown>{part.text}</ReactMarkdown>
                       </div>
-                    )
-                }
-              })}
+                    ) : null
+                  )}
+                </div>
+              </div>
             </div>
           ))}
-          {/** Mark end of chat */}
+
           <div ref={messagesEndRef} />
         </div>
-      )}
+      </div>
+
+      {/* TEXT INPUT BAR (STAYS FIXED AT BOTTOM) */}
       <form
-        data-loading={isLoading}
-        onSubmit={(e) => handleChat(e)}
-        className="max-w-md w-full mx-auto flex-1 sticky bottom-10 flex flex-col gap-2 bg-white"
+        onSubmit={handleChat}
+        className="sticky bottom-0 bg-white py-4 px-4 border-t shadow-md flex justify-center"
       >
-        <div className="form-control">
+        <div className="relative max-w-2xl w-full">
           <textarea
             name="message"
             placeholder="What do you want to know?"
-            className="w-full p-2 border rounded resize-none"
-            onKeyDown={handleKeyDown}
-            value={input}
-            onChange={(e) => {
-              console.log(e.currentTarget.value)
-              setInput(e.currentTarget.value)
+            className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3"
+            style={{ minHeight: "2.8rem", maxHeight: "7rem" }}
+            onInput={(e) => {
+              const el = e.target as HTMLTextAreaElement;
+              el.style.height = "auto";
+              el.style.height = el.scrollHeight + "px";
             }}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
           ></textarea>
-        </div>
 
-        {error && <div className="alert alert--error">{error}</div>}
+          {/* Attachment */}
+          <label className="absolute bottom-3 right-12 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300 transition">
+            <Paperclip className="w-5 h-5 text-gray-800" />
+            <input type="file" accept=".pdf,.doc,.docx" className="hidden" />
+          </label>
 
-        <div className="flex justify-center mt-2">
-          <button type="submit" className="absolute bottom-7.5 right-2 bg-blue-600 px-4 py-1 rounded text-white hover:bg-blue-700 transition">
-            {isLoading ? 'Thinking...' : 'Send'}
+          {/* Send */}
+          <button
+            type="submit"
+            className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition"
+          >
+            {isLoading ? (
+              <div className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></div>
+            ) : (
+              <Send className="w-4.5 h-4.5 text-white" />
+            )}
           </button>
         </div>
       </form>
+
+      {error && <div className="p-2 text-red-600">{error}</div>}
     </div>
-  )
+  );
 }
