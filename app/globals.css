@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -12,15 +12,29 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+form {
+  input,
+  textarea {
+    @apply border border-gray-300 bg-white w-full p-3;
+  }
+  textarea {
+    @apply field-sizing-content min-h-12;
+  }
+}
+
+.button {
+  @apply flex py-2 px-3 rounded transition-all ease-in-out duration-300 cursor-pointer min-h-10;
+  &.button--default {
+    @apply bg-gray-200 border-gray-300 hover:bg-gray-300 hover:border-gray-500;
+  }
+}
+
+[data-loading='true'] {
+  @apply animate-pulse opacity-50;
 }
