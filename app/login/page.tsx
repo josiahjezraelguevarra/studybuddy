@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 
-export default function pLogin() {
+export default function Login() {
   return (
     
     <section>
