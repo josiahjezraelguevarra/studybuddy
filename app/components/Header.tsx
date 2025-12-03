@@ -12,13 +12,15 @@ export default function Header() {
 
       {/* Right side: Buttons */}
       <div className="flex items-center gap-4">
-        <Link href="/Sign-up">
+        <Link href="/sign-up">
           <button className="bg-gray-800 px-2 py-1 text-white border-2 border-gray-500 rounded-lg hover:bg-white-700 transition cursor-pointer">
-            Sign Up
+            Sign Upgit add .
+git commit -m "Improved UI & Working"
+git push -u origin main
           </button>
         </Link>
 
-        <Link href="/Login">
+        <Link href="/login">
           <button className="bg-white px-4 py-1.5 text-gray-800 rounded-lg hover:bg-white-700 transition cursor-pointer">
             Login
           </button>
