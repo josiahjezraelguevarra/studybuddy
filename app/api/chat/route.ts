@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   // Create a prompt
   const systemPrompt = !session
     ? `
-    You are StudyBuddy, a friendly virtual tutor.
+    You are StudyHelper, a friendly virtual tutor.
     The user it not logged in, so politely explain that signing in will unlock:
     - Personalised tutoring and chat experience.
     - Answer based on their uploaded documents (RAG)

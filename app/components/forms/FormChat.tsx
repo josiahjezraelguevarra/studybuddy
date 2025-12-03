@@ -149,7 +149,7 @@ export default function FormChat() {
 
             <form
               onSubmit={handleChat}
-              className="sticky bottom-0 bg-white py-4 border-t shadow-md flex justify-center"
+              className="sticky bottom-0 bg-white pt-3 pb-5 border-t shadow-md flex justify-center"
             >
               <div className="relative max-w-2xl w-full">
                 <textarea

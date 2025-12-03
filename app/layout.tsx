@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StudyBuddy",
+  title: "StudyHelper",
   description: "Created by Jezrael Guevarra",
 };
 
