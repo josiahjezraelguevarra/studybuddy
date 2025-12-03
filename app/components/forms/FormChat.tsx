@@ -16,10 +16,12 @@ export default function FormChat() {
 
   const hasMessages = messages.length > 0;
 
-  // Auto-scroll effect
+  // Auto-scroll effect: Triggered by messages changing OR loading state starting
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]); // Added isLoading to dependency to scroll when thinking starts
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isLoading]);
 
   async function handleChat(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -45,16 +47,16 @@ export default function FormChat() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden w-full">
 
       {/* MAIN CHAT CONTAINER */}
-      <div className="flex flex-col flex-1 overflow-hidden bg-white">
+      <div className="flex flex-col flex-1 overflow-hidden bg-white w-full relative">
 
         {/* -------------------------------------------------- */}
         {/* VIEW 1: NO MESSAGES (CENTERED WELCOME & INPUT)     */}
         {/* -------------------------------------------------- */}
         {!hasMessages ? (
-          <div className="flex flex-col flex-1 justify-center items-center px-4">
+          <div className="flex flex-col flex-1 justify-center items-center px-4 w-full">
             <div className="max-w-md w-full mx-auto text-center mb-6">
               <h1 className="text-3xl font-bold">Hello, Guest!</h1>
               <p className="text-gray-700">
@@ -72,7 +74,7 @@ export default function FormChat() {
                 <textarea
                   name="message"
                   placeholder="What do you want to know?"
-                  className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3"
+                  className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
                   style={{ minHeight: "3rem" }}
                   onInput={(e) => {
                     const el = e.target as HTMLTextAreaElement;
@@ -92,7 +94,7 @@ export default function FormChat() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition"
+                  className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition disabled:opacity-50"
                 >
                   {isLoading ? (
                     <div className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></div>
@@ -105,23 +107,24 @@ export default function FormChat() {
           </div>
         ) : (
           /* -------------------------------------------------- */
-          /* VIEW 2: HAS MESSAGES (YOUR ORIGINAL LAYOUT)        */
+          /* VIEW 2: HAS MESSAGES (FIXED WIDTHS)                */
           /* -------------------------------------------------- */
           <>
-            <div className="flex-1 overflow-y-auto px-4 pt-4">
-              <div className="max-w-2xl mx-auto">
+            {/* Messages Area - Added w-full to ensure it spans width */}
+            <div className="flex-1 overflow-y-auto px-4 pt-4 w-full">
+              <div className="max-w-2xl mx-auto w-full pb-4">
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex w-full mb-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`flex items-start m-2 gap-3 max-w-[75%] ${
+                      className={`flex items-start gap-3 max-w-[85%] ${
                         message.role === "user" ? "flex-row-reverse" : ""
                       }`}
                     >
-                      <div className="h-10 w-10 rounded-full border flex items-center justify-center bg-gray-300">
-                        {message.role === "user" ? <UserRound /> : <Bot />}
+                      <div className="h-9 w-9 min-w-[2.25rem] rounded-full border flex items-center justify-center bg-gray-100">
+                        {message.role === "user" ? <UserRound size={18} /> : <Bot size={18} />}
                       </div>
 
                       <div className="flex flex-col">
@@ -129,10 +132,10 @@ export default function FormChat() {
                           part.type === "text" ? (
                             <div
                               key={i}
-                              className={`p-3 rounded-xl ${
+                              className={`p-3 rounded-2xl text-[15px] ${
                                 message.role === "user"
-                                  ? "bg-gray-800 text-white"
-                                  : "bg-gray-200 text-black"
+                                  ? "bg-gray-800 text-white rounded-tr-none"
+                                  : "bg-gray-100 text-black rounded-tl-none"
                               }`}
                             >
                               <ReactMarkdown>{part.text}</ReactMarkdown>
@@ -144,42 +147,41 @@ export default function FormChat() {
                   </div>
                 ))}
 
-                {/* --- THINKING INDICATOR (Maintains UI consistency) --- */}
+                {/* --- THINKING INDICATOR --- */}
                 {isLoading && messages[messages.length - 1]?.role === 'user' && (
-                  <div className="flex w-full justify-start">
-                    <div className="flex items-start m-2 gap-3 max-w-[75%]">
+                   <div className="flex w-full justify-start mb-4">
+                    <div className="flex items-start gap-3 max-w-[85%]">
                       {/* Bot Icon */}
-                      <div className="h-10 w-10 rounded-full border flex items-center justify-center bg-gray-300">
-                        <Bot />
+                      <div className="h-9 w-9 min-w-[2.25rem] rounded-full border flex items-center justify-center bg-gray-100">
+                        <Bot size={18} />
                       </div>
                       
                       {/* Bubble with dots */}
-                      <div className="flex flex-col">
-                         <div className="p-4 rounded-xl bg-gray-200 text-black">
-                           <div className="flex space-x-1 h-3 items-center">
-                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                           </div>
-                         </div>
+                      <div className="p-4 rounded-2xl rounded-tl-none bg-gray-100 text-black">
+                        <div className="flex space-x-1 h-3 items-center">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 )}
-
+                
                 <div ref={messagesEndRef} />
               </div>
             </div>
 
+            {/* Input Area - Added w-full to the form tag */}
             <form
               onSubmit={handleChat}
-              className="sticky bottom-0 bg-white py-4 border-t shadow-md flex justify-center"
+              className="sticky bottom-0 bg-white py-4 border-t shadow-md flex justify-center w-full z-10"
             >
-              <div className="relative max-w-2xl w-full">
+              <div className="relative max-w-2xl w-full px-4">
                 <textarea
                   name="message"
                   placeholder="What do you want to know?"
-                  className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3"
+                  className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
                   style={{ minHeight: "2.8rem", maxHeight: "7rem" }}
                   onInput={(e) => {
                     const el = e.target as HTMLTextAreaElement;
@@ -199,7 +201,7 @@ export default function FormChat() {
                 <button
                   type="submit"
                   disabled={isLoading} 
-                  className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition"
+                  className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition disabled:opacity-50"
                 >
                   {isLoading ? (
                     <div className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></div>
@@ -213,7 +215,7 @@ export default function FormChat() {
         )}
       </div>
 
-      {error && <div className="p-2 text-red-600">{error}</div>}
+      {error && <div className="p-2 text-red-600 absolute top-0 w-full text-center bg-red-100">{error}</div>}
     </div>
   );
 }
