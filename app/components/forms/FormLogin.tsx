@@ -89,7 +89,7 @@ export default function FormLogin() {
       : "focus:ring-gray-500"
 
   return (
-    <Default className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen">
       <Toaster position="top-center" />
       
       <div className="w-full max-w-sm bg-white shadow-md rounded-xl p-6 border">
@@ -162,6 +162,6 @@ export default function FormLogin() {
           </p>
         </form>
       </div>
-    </Default>
+    </div>
   );
 }
