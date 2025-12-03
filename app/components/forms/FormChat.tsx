@@ -1,5 +1,5 @@
 'use client'
-import { Send, Paperclip, UserRound, Bot } from "lucide-react";
+import { Send, Paperclip, UserRound, Bot, Sparkles} from "lucide-react";
 import { useChat } from '@ai-sdk/react'
 import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -55,14 +55,26 @@ export default function FormChat() {
         {/* -------------------------------------------------- */}
         {!hasMessages ? (
           <div className="flex flex-col flex-1 justify-center items-center px-4">
-            <div className="max-w-md w-full mx-auto text-center mb-6">
-              <h1 className="text-3xl font-bold">Hello, Guest!</h1>
-              <p className="text-gray-700">
-                Welcome to Study Buddy!{' '}
-                <a className="underline" href="/Sign-up">Create your free account</a>{' '}
-                and upload your notes to get instant AI-powered study help.
-              </p>
+           <div className="max-w-lg w-full mx-auto text-center mb-10 space-y-4">
+      
+            {/* Decorative Icon Bubble */}
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <Sparkles className="w-8 h-8 text-gray-800" />
             </div>
+
+            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+              Hello, Guest!
+            </h1>
+            
+            <p className="text-lg text-gray-600 leading-relaxed text-balance">
+              Welcome to <span className="font-semibold text-gray-900">Study Helper</span>.
+              <br />
+              <a className="underline decoration-gray-400 underline-offset-4 hover:decoration-gray-900 hover:text-gray-900 transition-all font-medium" href="/Sign-up">
+                Create your free account
+              </a>{' '}
+              and upload your notes to get instant AI-powered study help.
+            </p>
+          </div>
 
             <form 
               onSubmit={handleChat} 
@@ -155,7 +167,7 @@ export default function FormChat() {
                 <textarea
                   name="message"
                   placeholder="What do you want to know?"
-                  className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3"
+                  className="w-full bg-white border rounded-2xl resize-none text-[16px] p-3"
                   style={{ minHeight: "2.8rem", maxHeight: "7rem" }}
                   onInput={(e) => {
                     const el = e.target as HTMLTextAreaElement;
