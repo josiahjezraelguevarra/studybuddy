@@ -1,7 +1,7 @@
 'use client'
 import { Send, Paperclip, UserRound, Bot } from "lucide-react";
 import { useChat } from '@ai-sdk/react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 
 export default function FormChat() {
@@ -13,6 +13,13 @@ export default function FormChat() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const hasMessages = messages.length > 0;
+
+  // Auto-scroll effect
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]); // Added isLoading to dependency to scroll when thinking starts
 
   async function handleChat(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,65 +45,75 @@ export default function FormChat() {
   }
 
   return (
-      <div className="flex flex-col h-screen overflow-hidden bg-white">
+    <div className="flex flex-col h-full overflow-hidden">
 
-        {/* If there are NO messages — CENTERED MODE */}
-        {messages.length === 0 ? (
-          <div className="flex flex-col flex-1 items-center justify-center px-4">
-            <div className="max-w-2xl w-full">
-              <form
-                onSubmit={handleChat}
-                className="w-full flex flex-col items-center gap-3"
-              >
-                <div className="relative w-full max-w-xl">
-                  <textarea
-                    name="message"
-                    placeholder="What do you want to know?"
-                    className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3"
-                    style={{ minHeight: "3rem" }}
-                    onInput={(e) => {
-                      const el = e.target as HTMLTextAreaElement;
-                      el.style.height = "auto";
-                      el.style.height = el.scrollHeight + "px";
-                    }}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                  ></textarea>
+      {/* MAIN CHAT CONTAINER */}
+      <div className="flex flex-col flex-1 overflow-hidden bg-white">
 
-                  {/* Attachment */}
-                  <label className="absolute bottom-3 right-12 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300 transition">
-                    <Paperclip className="w-5 h-5 text-gray-800" />
-                    <input type="file" accept=".pdf,.doc,.docx" className="hidden" />
-                  </label>
-
-                  {/* Send */}
-                  <button
-                    type="submit"
-                    className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition"
-                  >
-                    {isLoading ? (
-                      <div className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></div>
-                    ) : (
-                      <Send className="w-4.5 h-4.5 text-white" />
-                    )}
-                  </button>
-                </div>
-              </form>
+        {/* -------------------------------------------------- */}
+        {/* VIEW 1: NO MESSAGES (CENTERED WELCOME & INPUT)     */}
+        {/* -------------------------------------------------- */}
+        {!hasMessages ? (
+          <div className="flex flex-col flex-1 justify-center items-center px-4">
+            <div className="max-w-md w-full mx-auto text-center mb-6">
+              <h1 className="text-3xl font-bold">Hello, Guest!</h1>
+              <p className="text-gray-700">
+                Welcome to Study Buddy!{' '}
+                <a className="underline" href="/Sign-up">Create your free account</a>{' '}
+                and upload your notes to get instant AI-powered study help.
+              </p>
             </div>
+
+            <form 
+              onSubmit={handleChat} 
+              className="w-full max-w-xl flex flex-col items-center gap-3"
+            >
+              <div className="relative w-full">
+                <textarea
+                  name="message"
+                  placeholder="What do you want to know?"
+                  className="w-full pr-16 bg-white border rounded-2xl resize-none text-[16px] p-3"
+                  style={{ minHeight: "3rem" }}
+                  onInput={(e) => {
+                    const el = e.target as HTMLTextAreaElement;
+                    el.style.height = "auto";
+                    el.style.height = el.scrollHeight + "px";
+                  }}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+
+                <label className="absolute bottom-3 right-12 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300 transition">
+                  <Paperclip className="w-5 h-5 text-gray-800" />
+                  <input type="file" accept=".pdf,.doc,.docx" className="hidden" />
+                </label>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition"
+                >
+                  {isLoading ? (
+                    <div className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></div>
+                  ) : (
+                    <Send className="w-4.5 h-4.5 text-white" />
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         ) : (
-          /* If there ARE messages — NORMAL CHAT MODE */
+          /* -------------------------------------------------- */
+          /* VIEW 2: HAS MESSAGES (YOUR ORIGINAL LAYOUT)        */
+          /* -------------------------------------------------- */
           <>
-            {/* CHAT MESSAGES */}
             <div className="flex-1 overflow-y-auto px-4 pt-4">
               <div className="max-w-2xl mx-auto">
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex w-full ${
-                      message.role === "user" ? "justify-end" : "justify-start"
-                    }`}
+                    className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
                       className={`flex items-start m-2 gap-3 max-w-[75%] ${
@@ -127,14 +144,36 @@ export default function FormChat() {
                   </div>
                 ))}
 
+                {/* --- THINKING INDICATOR (Maintains UI consistency) --- */}
+                {isLoading && messages[messages.length - 1]?.role === 'user' && (
+                  <div className="flex w-full justify-start">
+                    <div className="flex items-start m-2 gap-3 max-w-[75%]">
+                      {/* Bot Icon */}
+                      <div className="h-10 w-10 rounded-full border flex items-center justify-center bg-gray-300">
+                        <Bot />
+                      </div>
+                      
+                      {/* Bubble with dots */}
+                      <div className="flex flex-col">
+                         <div className="p-4 rounded-xl bg-gray-200 text-black">
+                           <div className="flex space-x-1 h-3 items-center">
+                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                             <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                           </div>
+                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div ref={messagesEndRef} />
               </div>
             </div>
 
-            {/* INPUT AREA (BOTTOM FIXED) */}
             <form
               onSubmit={handleChat}
-              className="sticky bottom-0 bg-white py-4 pt-3 pb-5 border-t shadow-md flex justify-center"
+              className="sticky bottom-0 bg-white py-4 border-t shadow-md flex justify-center"
             >
               <div className="relative max-w-2xl w-full">
                 <textarea
@@ -150,17 +189,16 @@ export default function FormChat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                ></textarea>
+                />
 
-                {/* Attachment */}
                 <label className="absolute bottom-3 right-12 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300 transition">
                   <Paperclip className="w-5 h-5 text-gray-800" />
                   <input type="file" accept=".pdf,.doc,.docx" className="hidden" />
                 </label>
 
-                {/* Send */}
                 <button
                   type="submit"
+                  disabled={isLoading} 
                   className="absolute bottom-3 right-2 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center hover:bg-black transition"
                 >
                   {isLoading ? (
@@ -173,9 +211,9 @@ export default function FormChat() {
             </form>
           </>
         )}
-
-        {error && <div className="p-2 text-red-600">{error}</div>}
       </div>
-    );
 
+      {error && <div className="p-2 text-red-600">{error}</div>}
+    </div>
+  );
 }
