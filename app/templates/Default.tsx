@@ -9,9 +9,9 @@ export default function ({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col min-h-dvh border">
+    <div className="flex flex-col h-dvh overflow-hidden border">
       <Header />
-      <main className={`mx-auto w-full max-w-xl p-5 flex-1  ${className}`}>
+      <main className={`mx-auto w-full max-w-dvh m-3 flex-1 ${className}`}>
         {children}
       </main>
       <Footer />

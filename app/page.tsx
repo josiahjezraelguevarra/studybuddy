@@ -3,8 +3,8 @@ import FormChat from '@/app/components/forms/FormChat'
 
 export default function Home() {
   return (
-    <Default className="flex items-center justify-center">
-      <div className="flex flex-col gap-10">
+    <Default className="flex items-center justify-center h-screen overflow-hidden">
+      <div className="flex flex-col gap-5 h-full pt-18">
         {/** Welcome message */}
         <div className="max-w-md w-full mx-auto text-center">
           <div className="flex flex-col gap-2">

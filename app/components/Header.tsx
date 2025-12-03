@@ -3,10 +3,12 @@ import Logo from "./Logo";
 
 export default function Header() {
   return (
-    <header className="w-full bg-gray-800 py-4 px-6 flex items-center justify-between">
+    <header className="fixed top-0 w-full bg-gray-800 py-4 px-6 flex items-center justify-between">
       
       {/* Left side: Logo */}
+      <Link href="/">   
       <Logo />
+      </Link>
 
       {/* Right side: Buttons */}
       <div className="flex items-center gap-4">

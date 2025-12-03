@@ -1,4 +1,4 @@
-import { BookOpen  } from "lucide-react";
+import { BookOpen, Link  } from "lucide-react";
 
 export default function Logo() {
   return (
